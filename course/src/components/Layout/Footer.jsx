@@ -1,5 +1,6 @@
 import { Box, Heading, Stack, VStack } from '@chakra-ui/react';
 import React from 'react';
+
 const Footer = () => {
   return (
     <Box padding={'4'} bg="blackAlpha.900" minH={'10vh'}>
@@ -13,7 +14,6 @@ const Footer = () => {
             color={'yellow.400'}
           />
         </VStack>
-      
       </Stack>
     </Box>
   );

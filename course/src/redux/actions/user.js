@@ -16,25 +16,23 @@ export const login = (email, password) => async dispatch => {
         withCredentials: true,
       }
     );
-
     dispatch({ type: 'loginSuccess', payload: data });
   } catch (error) {
     dispatch({ type: 'loginFail', payload: error.response.data.message });
   }
 };
 
-export const register = formdata => async dispatch => {
+export const register = (name, email, password, role) => async dispatch => {
   try {
     dispatch({ type: 'registerRequest' });
 
-    const { data } = await axios.post(`${server}/register`, formdata, {
+    const { data } = await axios.post(`${server}/register`, {name, email, password, role}, {
       headers: {
-        'Content-type': 'multipart/form-data',
+        'Content-type': 'application/json',
       },
 
       withCredentials: true,
     });
-
     dispatch({ type: 'registerSuccess', payload: data });
   } catch (error) {
     dispatch({ type: 'registerFail', payload: error.response.data.message });
@@ -71,15 +69,19 @@ export const logout = () => async dispatch => {
   }
 };
 
-export const buySubscription = () => async dispatch => {
+export const buySubscription = (name, number, expiry, cvc) => async dispatch => {
   try {
     dispatch({ type: 'buySubscriptionRequest' });
 
-    const { data } = await axios.get(`${server}/subscribe`, {
+    const { data } = await axios.post(`${server}/subscribe`, 
+      { name, number, expiry, cvc },
+      {
+      headers: {
+        'Content-type': 'application/json',
+      },
       withCredentials: true,
     });
-
-    dispatch({ type: 'buySubscriptionSuccess', payload: data.subscriptionId });
+    dispatch({ type: 'buySubscriptionSuccess', payload: data.message });
   } catch (error) {
     dispatch({
       type: 'buySubscriptionFail',
@@ -88,19 +90,19 @@ export const buySubscription = () => async dispatch => {
   }
 };
 
-export const cancelSubscription = () => async dispatch => {
-  try {
-    dispatch({ type: 'cancelSubscriptionRequest' });
+// export const cancelSubscription = () => async dispatch => {
+//   try {
+//     dispatch({ type: 'cancelSubscriptionRequest' });
 
-    const { data } = await axios.delete(`${server}/subscribe/cancel`, {
-      withCredentials: true,
-    });
+//     const { data } = await axios.delete(`${server}/subscribe/cancel`, {
+//       withCredentials: true,
+//     });
 
-    dispatch({ type: 'cancelSubscriptionSuccess', payload: data.message });
-  } catch (error) {
-    dispatch({
-      type: 'cancelSubscriptionFail',
-      payload: error.response.data.message,
-    });
-  }
-};
+//     dispatch({ type: 'cancelSubscriptionSuccess', payload: data.message });
+//   } catch (error) {
+//     dispatch({
+//       type: 'cancelSubscriptionFail',
+//       payload: error.response.data.message,
+//     });
+//   }
+// };
