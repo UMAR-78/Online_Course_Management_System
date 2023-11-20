@@ -9,7 +9,6 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import React, { useEffect } from 'react';
-import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { RiDeleteBin7Fill } from 'react-icons/ri';
 import { useDispatch, useSelector } from 'react-redux';
