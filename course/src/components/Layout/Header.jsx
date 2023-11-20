@@ -69,7 +69,10 @@ const Header = ({ isAuthenticated = false, user }) => {
                 url="/request"
                 title="Request a Course"
               />
+
+            {isAuthenticated && user && user.role === 'user' && (
               <LinkButton onClose={onClose} url="/subscribe" title="Subscription" />
+            )}
 
               <HStack
                 justifyContent={'space-evenly'}

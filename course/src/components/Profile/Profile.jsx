@@ -1,82 +1,37 @@
 import {
-  // Avatar,
   Button,
   Container,
   Heading,
   HStack,
   Image,
-  // Input,
-  // Modal,
-  // ModalBody,
-  // ModalCloseButton,
-  // ModalContent,
-  // ModalFooter,
-  // ModalHeader,
-  // ModalOverlay,
   Stack,
   Text,
-  // useDisclosure,
   VStack,
 } from '@chakra-ui/react';
 import React, { useEffect } from 'react';
-// import { useState } from 'react';
+import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { RiDeleteBin7Fill } from 'react-icons/ri';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import {
   removeFromPlaylist,
-  // updateProfilePicture,
 } from '../../redux/actions/profile';
-import { loadUser } from '../../redux/actions/user';
-// import { fileUploadCss } from '../Auth/Register';
+import { loadUser, cancelSubscription } from '../../redux/actions/user';
 
 const Profile = ({user}) => {
   const dispatch = useDispatch();
   const { loading, message, error } = useSelector(state => state.profile);
-  // const {
-  //   loading: subscriptionLoading,
-  //   message: subscriptionMessage,
-  //   error: subscriptionError,
-  // } = useSelector(state => state.subscription);
 
   const removeFromPlaylistHandler = async id => {
     await dispatch(removeFromPlaylist(id));
     dispatch(loadUser());
   };
 
-  // const changeImageSubmitHandler = async (e, image) => {
-  //   e.preventDefault();
-  //   const myForm = new FormData();
-  //   myForm.append('file', image);
-  //   await dispatch(updateProfilePicture(myForm));
-  //   dispatch(loadUser());
-  // };
-
-  // const cancelSubscriptionHandler = () => {
-  //   dispatch(cancelSubscription());
-  // };
-
-  // useEffect(() => {
-  //   if (error) {
-  //     toast.error(error);
-  //     dispatch({ type: 'clearError' });
-  //   }
-  //   if (message) {
-  //     toast.success(message);
-  //     dispatch({ type: 'clearMessage' });
-  //   }
-  //   if (subscriptionMessage) {
-  //     toast.success(subscriptionMessage);
-  //     dispatch({ type: 'clearMessage' });
-  //     dispatch(loadUser());
-  //   }
-
-  //   if (subscriptionError) {
-  //     toast.error(subscriptionError);
-  //     dispatch({ type: 'clearError' });
-  //   }
-  // }, [dispatch, error, message, subscriptionError, subscriptionMessage]);
+  const cancelSubscriptionHandler = async () => {
+    await dispatch(cancelSubscription());
+    dispatch(loadUser());
+  };
 
   useEffect(() => {
     if (error) {
@@ -88,7 +43,17 @@ const Profile = ({user}) => {
       dispatch({ type: 'clearMessage' });
     }
   }, [dispatch, error, message]);
-  // const { isOpen, onClose, onOpen } = useDisclosure();
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+      dispatch({ type: 'clearError' });
+    }
+    if (message) {
+      toast.success(message);
+      dispatch({ type: 'clearMessage' });
+    }
+  }, [dispatch, error, message]);
 
   return (
     <Container minH={'95vh'} maxW="container.lg" py="16" px="24">
@@ -101,7 +66,6 @@ const Profile = ({user}) => {
         spacing={['8', '16']}
         padding="8"
       >
-        {/*   */}
 
         <VStack spacing={'4'} alignItems={['center', 'flex-start']}>
           <HStack>
@@ -121,8 +85,8 @@ const Profile = ({user}) => {
               <Text children="Subscription" fontWeight={'bold'} />
               {user.subscription && user.subscription.status === 'active' ? (
                 <Button
-                  // isLoading={subscriptionLoading}
-                  // onClick={cancelSubscriptionHandler}
+                  isLoading={loading}
+                  onClick={cancelSubscriptionHandler}
                   color={'yellow.500'}
                   variant="unstyled"
                 >
@@ -183,81 +147,8 @@ const Profile = ({user}) => {
         </Stack>
       )}
 
-      {/* <ChangePhotoBox
-        changeImageSubmitHandler={changeImageSubmitHandler}
-        isOpen={isOpen}
-        onClose={onClose}
-        loading={loading}
-      /> */}
     </Container>
   );
 };
 
 export default Profile;
-
-// function ChangePhotoBox({
-//   isOpen,
-//   onClose,
-//   changeImageSubmitHandler,
-//   loading,
-// }) {
-//   const [image, setImage] = useState('');
-//   const [imagePrev, setImagePrev] = useState('');
-
-//   const changeImage = e => {
-//     const file = e.target.files[0];
-//     const reader = new FileReader();
-
-//     reader.readAsDataURL(file);
-
-//     reader.onloadend = () => {
-//       setImagePrev(reader.result);
-//       setImage(file);
-//     };
-//   };
-
-//   const closeHandler = () => {
-//     onClose();
-//     setImagePrev('');
-//     setImage('');
-//   };
-//   return (
-//     <Modal isOpen={isOpen} onClose={closeHandler}>
-//       <ModalOverlay backdropFilter={'blur(10px)'} />
-//       <ModalContent>
-//         <ModalHeader>Change Photo</ModalHeader>
-//         <ModalCloseButton />
-//         <ModalBody>
-//           <Container>
-//             <form onSubmit={e => changeImageSubmitHandler(e, image)}>
-//               <VStack spacing={'8'}>
-//                 {imagePrev && <Avatar src={imagePrev} boxSize={'48'} />}
-
-//                 <Input
-//                   type={'file'}
-//                   css={{ '&::file-selector-button': fileUploadCss }}
-//                   onChange={changeImage}
-//                 />
-
-//                 <Button
-//                   isLoading={loading}
-//                   w="full"
-//                   colorScheme={'yellow'}
-//                   type="submit"
-//                 >
-//                   Change
-//                 </Button>
-//               </VStack>
-//             </form>
-//           </Container>
-//         </ModalBody>
-
-//         <ModalFooter>
-//           <Button mr="3" onClick={closeHandler}>
-//             Cancel
-//           </Button>
-//         </ModalFooter>
-//       </ModalContent>
-//     </Modal>
-//   );
-// }
