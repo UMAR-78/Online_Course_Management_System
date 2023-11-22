@@ -1,21 +1,4 @@
 import express from "express";
-// import {
-//   addToPlaylist,
-//   changePassword,
-//   deleteMyProfile,
-//   deleteUser,
-//   forgetPassword,
-//   getAllUsers,
-//   getMyProfile,
-//   login,
-//   logout,
-//   register,
-//   removeFromPlaylist,
-//   resetPassword,
-//   updateProfile,
-//   updateprofilepicture,
-//   updateUserRole,
-// } from "../controllers/userController.js";
 import { isAuthenticated, authorizeAdmin } from "../middlewares/auth.js";
 // import singleUpload from "./middlewares/multer.js";
 import { register, login, logout, getMyProfile, changePassword, updateProfile, forgetPassword, resetPassword, addToPlaylist, removeFromPlaylist, getAllUsers, updateUserRole, deleteUser, deleteMyProfile, updateuserProfile } from "../controllers/userController.js";

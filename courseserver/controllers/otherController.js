@@ -3,7 +3,7 @@ import ErrorHandler from "../utils/errorHandler.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import { Stats } from "../models/Stats.js";
 
-
+ 
 export const courseRequest = catchAsyncError(async (req, res, next) => {
   const { name, email, course } = req.body;
   if (!name || !email || !course)

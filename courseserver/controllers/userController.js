@@ -171,7 +171,7 @@ export const resetPassword = catchAsyncError(async (req, res, next) => {
   const resetPasswordToken = crypto
     .createHash("sha256")
     .update(token)
-    .digest("hex");
+    .digest("hex"); 
 
   const user = await User.findOne({
     resetPasswordToken,
