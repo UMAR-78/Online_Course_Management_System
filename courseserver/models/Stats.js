@@ -20,6 +20,8 @@ const schema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-});
+},
+    {timestamps: true }
+);
  
 export const Stats = mongoose.model("Stats", schema);

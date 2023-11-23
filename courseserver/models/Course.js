@@ -64,7 +64,9 @@ const schema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-});
+},
+  {timestamps: true }
+);
 
 export const Course = mongoose.model("Course", schema);
 

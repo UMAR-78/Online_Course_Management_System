@@ -52,7 +52,9 @@ const schema = new mongoose.Schema({
 
   resetPasswordToken: String,
   resetPasswordExpire: String,
-});
+},
+  {timestamps: true }
+);
 
 schema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
