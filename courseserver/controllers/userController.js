@@ -6,7 +6,7 @@ import crypto from "crypto";
 import { Course } from "../models/Course.js";
 // import cloudinary from "cloudinary";
 // import getDataUri from "./utils/dataUri.js";
-// import { Stats } from "../models/Stats.js";
+import { Stats } from "../models/Stats.js";
 // import { UpdateUser } from "../models/UpdateUser.js";
 
 import { catchAsyncError } from "../middlewares/CatchAsyncError.js";

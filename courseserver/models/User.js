@@ -3,6 +3,7 @@ import validator from "validator";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
+// import { UserAudit } from "./UserAudit.js";
 
 const schema = new mongoose.Schema({
   name: {
@@ -92,5 +93,23 @@ schema.methods.getResetToken = function () {
 
   return resetToken;
 };
+
+// schema.post(["save", "updateOne", "deleteOne"], async function (doc, next) {
+//   const action = this.op; // "save", "updateOne", "deleteOne"
+//   const previousUser = this._conditions;
+//   const currentUser = doc.toObject();
+
+//   try {
+//     await UserAudit.create({
+//       action,
+//       previousUser,
+//       currentUser,
+//     });
+//   } catch (error) {
+//     console.error("Error creating UserAudit:", error);
+//   }
+
+//   next();
+// });
 
 export const User = mongoose.model("User", schema);

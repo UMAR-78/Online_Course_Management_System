@@ -21,5 +21,5 @@ const schema = new mongoose.Schema({
     default: Date.now,
   },
 });
-
+ 
 export const Stats = mongoose.model("Stats", schema);
