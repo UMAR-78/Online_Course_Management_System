@@ -24,5 +24,12 @@ export const courseRequest = (name, email, course) => async dispatch => {
       type: 'courseRequestFail',
       payload: error.response.data.message,
     });
+
+    await axios.post(`${server}/log`, { functionName: "courseRequest", screen: "Course Request", details: error.message }, {
+        headers: {
+          'Content-type': 'application/json',
+        },
+        withCredentials: true,
+      });
   }
 };

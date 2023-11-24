@@ -31,7 +31,6 @@ const schema = new mongoose.Schema({
   },
 
   subscription: {
-    id: String,
     status: String,
   },
   

@@ -29,6 +29,7 @@ export const cancelSubscription = catchAsyncError(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    message: "Subscription cancelled"
+    message: 
+       "Subscription cancelled"
   });
 });

@@ -1,6 +1,6 @@
 import express from "express";
 import {
-  // contact,
+  log,
   courseRequest,
   getDashboardStats,
 } from "../controllers/otherController.js";
@@ -16,5 +16,8 @@ router.route("/courserequest").post(courseRequest);
 router
   .route("/admin/stats")
   .get(isAuthenticated, authorizeAdmin, getDashboardStats);
+
+// Log 
+router.route("/log").post(log);
 
 export default router;

@@ -7,23 +7,33 @@ import { Course } from "../models/Course.js";
 // import cloudinary from "cloudinary";
 // import getDataUri from "./utils/dataUri.js";
 import { Stats } from "../models/Stats.js";
-// import { UpdateUser } from "../models/UpdateUser.js";
-
+import { BackendLog } from "../models/BackendLog.js";
 import { catchAsyncError } from "../middlewares/CatchAsyncError.js";
 
 export const register = catchAsyncError(async (req, res, next) => {
   const { name, email, password, role } = req.body;
-  //const file = req.file;
 
-  if (!name || !email || !password || !role)
-    return next(new ErrorHandler("Please enter all field", 400));
+  if (!name || !email || !password || !role) {
+    await BackendLog.create({
+      fileName: "userController",
+      functionName: "register",
+      details: "Please Enter all fields",
+    });
+
+    return next(new ErrorHandler("Please enter all fields", 400));
+  }
 
   let user = await User.findOne({ email });
 
-  if (user) return next(new ErrorHandler("User Already Exist", 409));
+  if (user) {
+    await BackendLog.create({
+      fileName: "userController",
+      functionName: "register",
+      details: "User Already Exist",
+    });
 
-  // const fileUri = getDataUri(file);
-  // const mycloud = await cloudinary.v2.uploader.upload(fileUri.content);
+    return next(new ErrorHandler("User Already Exist", 409));
+  }
 
   user = await User.create({
     name,

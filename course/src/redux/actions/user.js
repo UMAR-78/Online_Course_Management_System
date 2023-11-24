@@ -19,6 +19,13 @@ export const login = (email, password) => async dispatch => {
     dispatch({ type: 'loginSuccess', payload: data });
   } catch (error) {
     dispatch({ type: 'loginFail', payload: error.response.data.message });
+
+    await axios.post(`${server}/log`, { functionName: "login", screen: "Login", details: error.message }, {
+      headers: {
+        'Content-type': 'application/json',
+      },
+      withCredentials: true,
+    });
   }
 };
 
@@ -34,8 +41,15 @@ export const register = (name, email, password, role) => async dispatch => {
       withCredentials: true,
     });
     dispatch({ type: 'registerSuccess', payload: data });
-  } catch (error) {
+  } catch (error) { 
     dispatch({ type: 'registerFail', payload: error.response.data.message });
+
+    await axios.post(`${server}/log`, { functionName: "register", screen: "Register", details: error.message }, {
+      headers: {
+        'Content-type': 'application/json',
+      },
+      withCredentials: true,
+    });
   }
 };
 
@@ -53,6 +67,13 @@ export const loadUser = () => async dispatch => {
     dispatch({ type: 'loadUserSuccess', payload: data.user });
   } catch (error) {
     dispatch({ type: 'loadUserFail', payload: error.response.data.message });
+
+    await axios.post(`${server}/log`, { functionName: "loadUser", screen: "Profile", details: error.message }, {
+      headers: {
+        'Content-type': 'application/json',
+      },
+      withCredentials: true,
+    });
   }
 };
 
@@ -66,6 +87,13 @@ export const logout = () => async dispatch => {
     dispatch({ type: 'logoutSuccess', payload: data.message });
   } catch (error) {
     dispatch({ type: 'logoutFail', payload: error.response.data.message });
+
+    await axios.post(`${server}/log`, { functionName: "logout", screen: "Logout", details: error.message }, {
+      headers: {
+        'Content-type': 'application/json',
+      },
+      withCredentials: true,
+    });
   }
 };
 
@@ -78,9 +106,13 @@ export const buySubscription = () => async dispatch => {
     });
     dispatch({ type: 'buySubscriptionSuccess', payload: data.message });
   } catch (error) {
-    dispatch({
-      type: 'buySubscriptionFail',
-      payload: error.response.data.message,
+    dispatch({ type: 'buySubscriptionFail', payload: error.response.data.message });
+
+    await axios.post(`${server}/log`, { functionName: "buySubscription", screen: "Subscribe", details: error.message }, {
+      headers: {
+        'Content-type': 'application/json',
+      },
+      withCredentials: true,
     });
   }
 };
@@ -95,9 +127,13 @@ export const cancelSubscription = () => async dispatch => {
 
     dispatch({ type: 'cancelSubscriptionSuccess', payload: data.message });
   } catch (error) {
-    dispatch({
-      type: 'cancelSubscriptionFail',
-      payload: error.response.data.message,
+    dispatch({ type: 'cancelSubscriptionFail', payload: error.response.data.message });
+
+    await axios.post(`${server}/log`, { functionName: "cancelSubscription", screen: "Profile", details: error.message }, {
+      headers: {
+        'Content-type': 'application/json',
+      },
+      withCredentials: true,
     });
   }
 };

@@ -26,33 +26,15 @@ export const updateProfile = (name, email) => async dispatch => {
         type: 'updateProfileFail',
         payload: error.response.data.message,
       });
+
+      await axios.post(`${server}/log`, { functionName: "updateProfile", screen: "Update Profile", details: error.message }, {
+        headers: {
+          'Content-type': 'application/json',
+        },
+        withCredentials: true,
+      });
     }
   };
-  
-//   export const updateProfilePicture = formdata => async dispatch => {
-//     try {
-//       dispatch({ type: 'updateProfilePictureRequest' });
-  
-//       const { data } = await axios.put(
-//         `${server}/updateprofilepicture`,
-//         formdata,
-//         {
-//           headers: {
-//             'Content-type': 'multipart/form-data',
-//           },
-  
-//           withCredentials: true,
-//         }
-//       );
-  
-//       dispatch({ type: 'updateProfilePictureSuccess', payload: data.message });
-//     } catch (error) {
-//       dispatch({
-//         type: 'updateProfilePictureFail',
-//         payload: error.response.data.message,
-//       });
-//     }
-//   };
   
   export const changePassword = (oldPassword, newPassword) => async dispatch => {
     try {
@@ -78,6 +60,13 @@ export const updateProfile = (name, email) => async dispatch => {
       dispatch({
         type: 'changePasswordFail',
         payload: error.response.data.message,
+      });
+
+      await axios.post(`${server}/log`, { functionName: "changePassword", screen: "Change Password", details: error.message }, {
+        headers: {
+          'Content-type': 'application/json',
+        },
+        withCredentials: true,
       });
     }
   };
@@ -108,6 +97,13 @@ export const updateProfile = (name, email) => async dispatch => {
         type: 'forgetPasswordFail',
         payload: error.response.data.message,
       });
+
+      await axios.post(`${server}/log`, { functionName: "forgetPassword", screen: "Forget Password", details: error.message }, {
+        headers: {
+          'Content-type': 'application/json',
+        },
+        withCredentials: true,
+      });
     }
   };
   
@@ -135,6 +131,13 @@ export const updateProfile = (name, email) => async dispatch => {
       dispatch({
         type: 'resetPasswordFail',
         payload: error.response.data.message,
+      });
+
+      await axios.post(`${server}/log`, { functionName: "resetPassword", screen: "Reset Password", details: error.message }, {
+        headers: {
+          'Content-type': 'application/json',
+        },
+        withCredentials: true,
       });
     }
   };
@@ -165,6 +168,13 @@ export const updateProfile = (name, email) => async dispatch => {
         type: 'addToPlaylistFail',
         payload: error.response.data.message,
       });
+
+      await axios.post(`${server}/log`, { functionName: "addToPlaylist", screen: "Courses", details: error.message }, {
+        headers: {
+          'Content-type': 'application/json',
+        },
+        withCredentials: true,
+      });
     }
   };
   
@@ -186,6 +196,13 @@ export const updateProfile = (name, email) => async dispatch => {
       dispatch({
         type: 'removeFromPlaylistFail',
         payload: error.response.data.message,
+      });
+
+      await axios.post(`${server}/log`, { functionName: "removeFromPlaylist", screen: "Profile", details: error.message }, {
+        headers: {
+          'Content-type': 'application/json',
+        },
+        withCredentials: true,
       });
     }
   };

@@ -29,7 +29,7 @@ app.use(
 // Importing & Using Routes
 import course from "./routes/courseRoutes.js";
 import user from "./routes/userRoutes.js";
-import subscription from "./routes/subscriptionRoutes.js";
+import subscription from "./routes/subscriptionRoutes.js"
 import other from "./routes/otherRoutes.js";
 
 app.use("/api/v1", course);

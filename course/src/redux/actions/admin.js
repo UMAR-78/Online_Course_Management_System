@@ -23,6 +23,13 @@ export const createCourse = formData => async dispatch => {
       type: 'createCourseFail',
       payload: error.response.data.message,
     });
+
+    await axios.post(`${server}/log`, { functionName: "createCourse", screen: "Create Course", details: error.message }, {
+      headers: {
+        'Content-type': 'application/json',
+      },
+      withCredentials: true,
+    });
   }
 };
 
@@ -40,6 +47,13 @@ export const deleteCourse = id => async dispatch => {
     dispatch({
       type: 'deleteCourseFail',
       payload: error.response.data.message,
+    });
+
+    await axios.post(`${server}/log`, { functionName: "deleteCourse", screen: "Admin Courses", details: error.message }, {
+      headers: {
+        'Content-type': 'application/json',
+      },
+      withCredentials: true,
     });
   }
 };
@@ -66,6 +80,13 @@ export const addLecture = (id, formdata) => async dispatch => {
       type: 'addLectureFail',
       payload: error.response.data.message,
     });
+
+    await axios.post(`${server}/log`, { functionName: "addLecture", screen: "Admin Courses", details: error.message }, {
+      headers: {
+        'Content-type': 'application/json',
+      },
+      withCredentials: true,
+    });
   }
 };
 
@@ -87,6 +108,13 @@ export const deleteLecture = (courseId, lectureId) => async dispatch => {
       type: 'deleteLectureFail',
       payload: error.response.data.message,
     });
+
+    await axios.post(`${server}/log`, { functionName: "deleteLectures", screen: "Admin Courses", details: error.message }, {
+      headers: {
+        'Content-type': 'application/json',
+      },
+      withCredentials: true,
+    });
   }
 };
 
@@ -104,6 +132,13 @@ export const getAllUsers = () => async dispatch => {
     dispatch({
       type: 'getAllUsersFail',
       payload: error.response.data.message,
+    });
+
+    await axios.post(`${server}/log`, { functionName: "getAllUsers", screen: "Admin Users", details: error.message }, {
+      headers: {
+        'Content-type': 'application/json',
+      },
+      withCredentials: true,
     });
   }
 };
@@ -123,6 +158,13 @@ export const updateUserRole = id => async dispatch => {
       type: 'updateUserRoleFail',
       payload: error.response.data.message,
     });
+
+    await axios.post(`${server}/log`, { functionName: "updateUserRole", screen: "Admin Users", details: error.message }, {
+      headers: {
+        'Content-type': 'application/json',
+      },
+      withCredentials: true,
+    });
   }
 };
 
@@ -141,6 +183,13 @@ export const deleteUser = id => async dispatch => {
       type: 'deleteUserFail',
       payload: error.response.data.message,
     });
+
+    await axios.post(`${server}/log`, { functionName: "deleteUser", screen: "Admin Users", details: error.message }, {
+      headers: {
+        'Content-type': 'application/json',
+      },
+      withCredentials: true,
+    });
   }
 };
 
@@ -158,6 +207,13 @@ export const getDashboardStats = () => async dispatch => {
     dispatch({
       type: 'getAdminStatsFail',
       payload: error.response.data.message,
+    });
+
+    await axios.post(`${server}/log`, { functionName: "getDashboardStats", screen: "Admin Dashboard", details: error.message }, {
+      headers: {
+        'Content-type': 'application/json',
+      },
+      withCredentials: true,
     });
   }
 };

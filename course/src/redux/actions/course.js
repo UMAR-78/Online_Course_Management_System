@@ -16,6 +16,13 @@ export const getAllCourses =
         type: 'allCoursesFail',
         payload: error.response.data.message,
       });
+
+      await axios.post(`${server}/log`, { functionName: "getAllCourses", screen: "Courses", details: error.message }, {
+        headers: {
+          'Content-type': 'application/json',
+        },
+        withCredentials: true,
+      });
     }
   };
 
@@ -32,6 +39,13 @@ export const getCourseLectures = id => async dispatch => {
     dispatch({
       type: 'getCourseFail',
       payload: error.response.data.message,
+    });
+
+    await axios.post(`${server}/log`, { functionName: "getCourseLectures", screen: "Lectures", details: error.message }, {
+      headers: {
+        'Content-type': 'application/json',
+      },
+      withCredentials: true,
     });
   }
 };

@@ -2,6 +2,7 @@ import { catchAsyncError } from "../middlewares/CatchAsyncError.js";
 import ErrorHandler from "../utils/errorHandler.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import { Stats } from "../models/Stats.js";
+import { FrontendLog } from "../models/FrontendLog.js";
 
  
 export const courseRequest = catchAsyncError(async (req, res, next) => {
@@ -84,4 +85,19 @@ export const getDashboardStats = catchAsyncError(async (req, res, next) => {
     usersProfit,
   });
 });
+
+export const log = catchAsyncError(async (req, res, next) => {
+    const { functionName, screen, details } = req.body;
+
+      await FrontendLog.create({
+        functionName: functionName,
+        screen: screen,
+        details: details,
+      });
+
+      res.status(200).json({
+        success: true,
+        message: "Log Saved Successfully",
+      });
+  });
  
