@@ -6,6 +6,7 @@ import cloudinary from "cloudinary";
 import { Stats } from "../models/Stats.js"; 
 import { courseAudit } from "./courseAuditController.js";
 import { statsAudit } from "./statsAuditController.js";
+import { BackendLog } from "../models/BackendLog.js";
 
 export const getAllCourses = catchAsyncError(async (req, res, next) => {
   const keyword = req.query.keyword || "";
@@ -30,8 +31,15 @@ export const getAllCourses = catchAsyncError(async (req, res, next) => {
 export const createCourse = catchAsyncError(async (req, res, next) => {
   const { title, description, category, createdBy } = req.body;
 
-  if (!title || !description || !category || !createdBy)
+  if (!title || !description || !category || !createdBy) {
+    await BackendLog.create({
+      fileName: "courseController",
+      functionName: "createCourse",
+      details: "Please add all fields",
+    });
+
     return next(new ErrorHandler("Please add all fields", 400));
+  }
 
   const file = req.file;
 
@@ -61,7 +69,15 @@ export const createCourse = catchAsyncError(async (req, res, next) => {
 export const getCourseLectures = catchAsyncError(async (req, res, next) => {
   const course = await Course.findById(req.params.id);
 
-  if (!course) return next(new ErrorHandler("Course not found", 404));
+  if (!course) {
+    await BackendLog.create({
+      fileName: "courseController",
+      functionName: "getCourseLectures",
+      details: "Course not found",
+    });
+
+    return next(new ErrorHandler("Course not found", 404));
+  }
 
   course.views += 1;
 
@@ -80,8 +96,15 @@ export const addLecture = catchAsyncError(async (req, res, next) => {
 
   const course = await Course.findById(id);
 
-  if (!course) return next(new ErrorHandler("Course not found", 404));
+  if (!course) {
+    await BackendLog.create({
+      fileName: "courseController",
+      functionName: "addLecture",
+      details: "Course not found",
+    });
 
+    return next(new ErrorHandler("Course not found", 404));
+  }
   const oldValue = await Course.findById(id);
 
   const file = req.file;
@@ -119,7 +142,15 @@ export const deleteCourse = catchAsyncError(async (req, res, next) => {
 
   const oldValue = course.toObject();
 
-  if (!course) return next(new ErrorHandler("Course not found", 404));
+  if (!course) {
+    await BackendLog.create({
+      fileName: "courseController",
+      functionName: "deleteCourse",
+      details: "Course not found",
+    });
+
+    return next(new ErrorHandler("Course not found", 404));
+  }
 
   await cloudinary.v2.uploader.destroy(course.poster.public_id);
 
@@ -147,8 +178,15 @@ export const deleteCourse = catchAsyncError(async (req, res, next) => {
 
   const oldValue = await Course.findById(courseId);
 
-  if (!course) return next(new ErrorHandler("Course not found", 404));
+  if (!course) {
+    await BackendLog.create({
+      fileName: "courseController",
+      functionName: "deleteLecture",
+      details: "Course not found",
+    });
 
+    return next(new ErrorHandler("Course not found", 404));
+  }
   const lecture = course.lectures.find((item) => {
     if (item._id.toString() === lectureId.toString()) return item;
   });

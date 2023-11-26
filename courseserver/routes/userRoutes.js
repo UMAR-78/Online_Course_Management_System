@@ -1,7 +1,6 @@
 import express from "express";
 import { isAuthenticated, authorizeAdmin } from "../middlewares/auth.js";
-// import singleUpload from "./middlewares/multer.js";
-import { register, login, logout, getMyProfile, changePassword, updateProfile, forgetPassword, resetPassword, addToPlaylist, removeFromPlaylist, getAllUsers, updateUserRole, deleteUser, deleteMyProfile, updateuserProfile } from "../controllers/userController.js";
+import { register, login, logout, getMyProfile, changePassword, updateProfile, forgetPassword, resetPassword, addToPlaylist, removeFromPlaylist, getAllUsers, updateUserRole, deleteUser, deleteMyProfile} from "../controllers/userController.js";
 
 const router = express.Router();
 
@@ -18,20 +17,13 @@ router.route("/logout").get(logout);
 router.route("/me").get(isAuthenticated, getMyProfile);
 
 // Delete my profile
-router.route("/me").delete(isAuthenticated, deleteMyProfile);
+router.route("/me").delete(isAuthenticated, deleteMyProfile); 
 
 // ChangePassword
 router.route("/changepassword").put(isAuthenticated, changePassword);
 
 // UpdateProfile
 router.route("/updateprofile").put(isAuthenticated, updateProfile);
-
-router.route("/updateuserprofile").put(isAuthenticated, updateuserProfile);
-
-// // UpdateProfilePicture
-// router
-//   .route("/updateprofilepicture")
-//   .put(isAuthenticated, singleUpload, updateprofilepicture);
 
 // ForgetPassword
 router.route("/forgetpassword").post(forgetPassword);

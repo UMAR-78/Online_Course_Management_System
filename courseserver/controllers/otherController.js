@@ -3,11 +3,19 @@ import ErrorHandler from "../utils/errorHandler.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import { Stats } from "../models/Stats.js";
 import { FrontendLog } from "../models/FrontendLog.js";
+import { BackendLog } from "../models/BackendLog.js";
  
 export const courseRequest = catchAsyncError(async (req, res, next) => {
   const { name, email, course } = req.body;
-  if (!name || !email || !course)
+  if (!name || !email || !course) {
+    await BackendLog.create({
+        fileName: "otherController",
+        functionName: "courseRequest",
+        details: "All fields are mandatory",
+      });
+
     return next(new ErrorHandler("All fields are mandatory", 400));
+  }
 
   const to = process.env.MY_MAIL;
   const subject = "Requesting for a course on Happy Learning";

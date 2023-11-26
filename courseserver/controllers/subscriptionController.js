@@ -2,18 +2,23 @@ import { catchAsyncError } from "../middlewares/CatchAsyncError.js";
 import { User } from "../models/User.js";
 import ErrorHandler from "../utils/errorHandler.js";
 import { userAudit } from "./userAuditController.js";
+import { BackendLog } from "../models/BackendLog.js";
 
 export const buySubscription = catchAsyncError(async (req, res, next) => {
   const user = await User.findById(req.user._id);
 
   const oldValue = await User.findById(req.user._id);
 
-  if (user.role === "admin")
-    return next(new ErrorHandler("Admin can't buy subscription", 400));
+  if (user.subscription.status === "active") {
+    await BackendLog.create({
+      fileName: "subscriptionController",
+      functionName: "buySubscription",
+      details: "You have subscribed already",
+    });
 
-  if (user.subscription.status === "active")
     return next(new ErrorHandler("You have subscribed already", 400));
-
+  }
+  
   user.subscription.status = 'active';
 
   await user.save();

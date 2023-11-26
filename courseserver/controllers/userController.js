@@ -50,17 +50,40 @@ export const register = catchAsyncError(async (req, res, next) => {
 export const login = catchAsyncError(async (req, res, next) => {
   const { email, password } = req.body;
 
-  if (!email || !password)
+  if (!email || !password) {
+    await BackendLog.create({
+      fileName: "userController",
+      functionName: "login",
+      details: "Please enter all field",
+    });
+
     return next(new ErrorHandler("Please enter all field", 400));
+  }
 
   const user = await User.findOne({ email }).select("+password");
 
-  if (!user) return next(new ErrorHandler("Incorrect Email or Password", 401));
+  if (!user) {
+    await BackendLog.create({
+      fileName: "userController",
+      functionName: "login",
+      details: "Incorrect Email or Password",
+    });
+
+    return next(new ErrorHandler("Incorrect Email or Password", 401));
+  }
+  
 
   const isMatch = await user.comparePassword(password);
 
-  if (!isMatch)
+  if (!isMatch) {
+    await BackendLog.create({
+      fileName: "userController",
+      functionName: "login",
+      details: "Incorrect Email or Password",
+    });
+
     return next(new ErrorHandler("Incorrect Email or Password", 401));
+  }
 
   sendToken(res, user, `Welcome back, ${user.name}`, 200);
 });
@@ -91,16 +114,31 @@ export const getMyProfile = catchAsyncError(async (req, res, next) => {
 
 export const changePassword = catchAsyncError(async (req, res, next) => {
   const { oldPassword, newPassword } = req.body;
-  if (!oldPassword || !newPassword)
-    return next(new ErrorHandler("Please enter all field", 400));
+  if (!oldPassword || !newPassword) {
+    await BackendLog.create({
+      fileName: "userController",
+      functionName: "changePassword",
+      details: "Please enter all field",
+    });
 
+    return next(new ErrorHandler("Please enter all field", 400));
+  }
+    
   const user = await User.findById(req.user._id).select("+password");
 
   const oldValue = await User.findById(req.user._id);
 
   const isMatch = await user.comparePassword(oldPassword);
 
-  if (!isMatch) return next(new ErrorHandler("Incorrect Old Password", 400));
+  if (!isMatch) {
+    await BackendLog.create({
+      fileName: "userController",
+      functionName: "changePassword",
+      details: "Incorrect Old Password",
+    });
+
+    return next(new ErrorHandler("Incorrect Old Password", 400));
+  }
 
   user.password = newPassword;
 
@@ -122,6 +160,11 @@ export const updateProfile = catchAsyncError(async (req, res, next) => {
   const oldValue = await User.findById(req.user._id);
 
   if (!user) {
+      await BackendLog.create({
+        fileName: "userController",
+        functionName: "updateProfile",
+        details: "User not found",
+      });
     return next(new ErrorHandler("User not found", 404));
   }
 
@@ -143,8 +186,15 @@ export const forgetPassword = catchAsyncError(async (req, res, next) => {
 
   const user = await User.findOne({ email });
 
-  if (!user) return next(new ErrorHandler("No user with this Email Address", 400));
+  if (!user) {
+    await BackendLog.create({
+      fileName: "userController",
+      functionName: "forgetPassword",
+      details: "No user with this Email Address",
+    });
 
+    return next(new ErrorHandler("No user with this Email Address", 400));
+  }
   const resetToken = await user.getResetToken();
 
   await user.save();
@@ -177,8 +227,15 @@ export const resetPassword = catchAsyncError(async (req, res, next) => {
     },
   });
 
-  if (!user)
+  if (!user) {
+    await BackendLog.create({
+      fileName: "userController",
+      functionName: "resetPassword",
+      details: "Token is invalid or has been expired",
+    });
+
     return next(new ErrorHandler("Token is invalid or has been expired", 401));
+  }
 
   const oldValue = await User.findById(req.user._id);
 
@@ -203,14 +260,28 @@ export const addToPlaylist = catchAsyncError(async (req, res, next) => {
 
   const course = await Course.findById(req.body.id);
 
-  if (!course) return next(new ErrorHandler("Invalid Course Id", 404));
+  if (!course) {
+    await BackendLog.create({
+      fileName: "userController",
+      functionName: "addToPlaylist",
+      details: "Invalid Course Id",
+    });
 
+    return next(new ErrorHandler("Invalid Course Id", 404));
+  }
   const itemExist = user.playlist.find((item) => {
     if (item.course.toString() === course._id.toString()) return true;
   });
 
-  if (itemExist) return next(new ErrorHandler("Item Already Exist", 409));
+  if (itemExist) {
+    await BackendLog.create({
+      fileName: "userController",
+      functionName: "addToPlaylist",
+      details: "Item Already Exist",
+    });
 
+    return next(new ErrorHandler("Item Already Exist", 409));
+  }
   user.playlist.push({
     course: course._id,
     poster: course.poster.url,
@@ -232,7 +303,16 @@ export const removeFromPlaylist = catchAsyncError(async (req, res, next) => {
   const oldValue = await User.findById(req.user._id);
 
   const course = await Course.findById(req.query.id);
-  if (!course) return next(new ErrorHandler("Invalid Course Id", 404));
+
+  if (!course) {
+    await BackendLog.create({
+      fileName: "userController",
+      functionName: "removeFromPlaylist",
+      details: "Invalid Course Id",
+    });
+
+    return next(new ErrorHandler("Invalid Course Id", 404));
+  }
 
   const newPlaylist = user.playlist.filter((item) => {
     if (item.course.toString() !== course._id.toString()) return item;
@@ -264,8 +344,16 @@ export const getAllUsers = catchAsyncError(async (req, res, next) => {
   export const updateUserRole = catchAsyncError(async (req, res, next) => {
   const user = await User.findById(req.params.id);
 
-  if (!user) return next(new ErrorHandler("User not found", 404));
-  
+  if (!user) {
+    await BackendLog.create({
+      fileName: "userController",
+      functionName: "updateUserRole",
+      details: "User not found",
+    });
+
+    return next(new ErrorHandler("User not found", 404));
+  }
+
   const oldValue = await User.findById(req.user._id);
 
   if (user.role === "user") user.role = "admin";
@@ -284,8 +372,14 @@ export const getAllUsers = catchAsyncError(async (req, res, next) => {
 export const deleteUser = catchAsyncError(async (req, res, next) => {
   const user = await User.findById(req.params.id);
 
-  if (!user) return next(new ErrorHandler("User not found", 404));
-
+  if (!user) {
+    await BackendLog.create({
+      fileName: "userController",
+      functionName: "deleteUser",
+      details: "User not found",
+    });
+    return next(new ErrorHandler("User not found", 404));
+  }
   const oldValue = user.toObject();
 
   await User.deleteOne({ _id: req.params.id });
@@ -337,23 +431,4 @@ User.watch().on("change", async () => {
   }
 });
 
-export const updateuserProfile = catchAsyncError(async (req, res, next) => {
-  const { name, email } = req.body;
-
-  const user = await User.findById(req.user._id);
-
-  const oldValue = await User.findById(req.user._id);
-
-  if (name) user.name = name;
-  if (email) user.email = email;
-
-  await user.save();
-
-  userAudit(user._id, "UPDATE", oldValue, user);
-
-  res.status(200).json({
-    success: true,
-    message: "Profile Updated Successfully",
-  });
-});
 
