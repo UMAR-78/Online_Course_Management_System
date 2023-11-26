@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const schema = new mongoose.Schema({
-  userId: {
+  courseId: {
     type: String,
     required: true,
   },
@@ -21,4 +21,4 @@ const schema = new mongoose.Schema({
     { timestamps: true }
 );
 
-export const UserAudit = mongoose.model("UserAudit", schema);
+export const CourseAudit = mongoose.model("CourseAudit", schema);

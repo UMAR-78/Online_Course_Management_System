@@ -9,6 +9,7 @@ import { Course } from "../models/Course.js";
 import { Stats } from "../models/Stats.js";
 import { BackendLog } from "../models/BackendLog.js";
 import { catchAsyncError } from "../middlewares/CatchAsyncError.js";
+import { userAudit } from "./userAuditController.js";
 
 export const register = catchAsyncError(async (req, res, next) => {
   const { name, email, password, role } = req.body;
@@ -41,6 +42,8 @@ export const register = catchAsyncError(async (req, res, next) => {
     password,
     role,
   });
+
+  userAudit(user._id, "INSERT", "-", user);
 
   sendToken(res, user, "Registered Successfully", 201);
 });
@@ -94,6 +97,8 @@ export const changePassword = catchAsyncError(async (req, res, next) => {
 
   const user = await User.findById(req.user._id).select("+password");
 
+  const oldValue = await User.findById(req.user._id);
+
   const isMatch = await user.comparePassword(oldPassword);
 
   if (!isMatch) return next(new ErrorHandler("Incorrect Old Password", 400));
@@ -101,6 +106,8 @@ export const changePassword = catchAsyncError(async (req, res, next) => {
   user.password = newPassword;
 
   await user.save();
+
+  userAudit(user._id, "UPDATE", oldValue, user);
 
   res.status(200).json({
     success: true,
@@ -113,6 +120,8 @@ export const updateProfile = catchAsyncError(async (req, res, next) => {
 
   const user = await User.findById(req.user._id);
 
+  const oldValue = await User.findById(req.user._id);
+
   if (!user) {
     return next(new ErrorHandler("User not found", 404));
   }
@@ -121,6 +130,8 @@ export const updateProfile = catchAsyncError(async (req, res, next) => {
   if (email) user.email = email;
 
   await user.save();
+
+  userAudit(user._id, "UPDATE", oldValue, user);
 
   res.status(200).json({
     success: true,
@@ -193,11 +204,15 @@ export const resetPassword = catchAsyncError(async (req, res, next) => {
   if (!user)
     return next(new ErrorHandler("Token is invalid or has been expired", 401));
 
+  const oldValue = await User.findById(req.user._id);
+
   user.password = req.body.password;
   user.resetPasswordToken = undefined;
   user.resetPasswordExpire = undefined;
 
   await user.save();
+
+  userAudit(user._id, "UPDATE", oldValue, user);
 
   res.status(200).json({
     success: true,
@@ -207,6 +222,8 @@ export const resetPassword = catchAsyncError(async (req, res, next) => {
 
 export const addToPlaylist = catchAsyncError(async (req, res, next) => {
   const user = await User.findById(req.user._id);
+
+  const oldValue = await User.findById(req.user._id);
 
   const course = await Course.findById(req.body.id);
 
@@ -225,6 +242,8 @@ export const addToPlaylist = catchAsyncError(async (req, res, next) => {
 
   await user.save();
 
+  userAudit(user._id, "UPDATE", oldValue, user);
+
   res.status(200).json({
     success: true,
     message: "Added to Course list",
@@ -233,6 +252,9 @@ export const addToPlaylist = catchAsyncError(async (req, res, next) => {
 
 export const removeFromPlaylist = catchAsyncError(async (req, res, next) => {
   const user = await User.findById(req.user._id);
+
+  const oldValue = await User.findById(req.user._id);
+
   const course = await Course.findById(req.query.id);
   if (!course) return next(new ErrorHandler("Invalid Course Id", 404));
 
@@ -241,7 +263,11 @@ export const removeFromPlaylist = catchAsyncError(async (req, res, next) => {
   });
 
   user.playlist = newPlaylist;
+
   await user.save();
+
+  userAudit(user._id, "UPDATE", oldValue, user);
+
   res.status(200).json({
     success: true,
     message: "Removed From Course list",
@@ -263,11 +289,15 @@ export const getAllUsers = catchAsyncError(async (req, res, next) => {
   const user = await User.findById(req.params.id);
 
   if (!user) return next(new ErrorHandler("User not found", 404));
+  
+  const oldValue = await User.findById(req.user._id);
 
   if (user.role === "user") user.role = "admin";
   else user.role = "user";
 
   await user.save();
+
+  userAudit(user._id, "UPDATE", oldValue, user);
 
   res.status(200).json({
     success: true,
@@ -280,11 +310,12 @@ export const deleteUser = catchAsyncError(async (req, res, next) => {
 
   if (!user) return next(new ErrorHandler("User not found", 404));
 
-  // await cloudinary.v2.uploader.destroy(user.avatar.public_id);
-
-  // Cancel Subscription
+  // const oldValue = user.toObject();
 
   await User.deleteOne({ _id: req.params.id });
+
+  const oldValue = await User.find({ _id: req.params.id });
+  userAudit(user._id, "DELETE", oldValue, "-");
 
   res.status(200).json({
     success: true,
