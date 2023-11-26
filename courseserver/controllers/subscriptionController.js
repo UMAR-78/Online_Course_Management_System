@@ -1,9 +1,12 @@
 import { catchAsyncError } from "../middlewares/CatchAsyncError.js";
 import { User } from "../models/User.js";
 import ErrorHandler from "../utils/errorHandler.js";
+import { userAudit } from "./userAuditController.js";
 
 export const buySubscription = catchAsyncError(async (req, res, next) => {
   const user = await User.findById(req.user._id);
+
+  const oldValue = await User.findById(req.user._id);
 
   if (user.role === "admin")
     return next(new ErrorHandler("Admin can't buy subscription", 400));
@@ -15,6 +18,7 @@ export const buySubscription = catchAsyncError(async (req, res, next) => {
 
   await user.save();
 
+  userAudit(user._id, "UPDATE", oldValue, user);
   res.status(201).json({
     success: true,
     message: "Subscription Successful",
@@ -24,9 +28,13 @@ export const buySubscription = catchAsyncError(async (req, res, next) => {
 export const cancelSubscription = catchAsyncError(async (req, res, next) => {
   const user = await User.findById(req.user._id);
  
+  const oldValue = await User.findById(req.user._id);
+
   user.subscription.status = undefined;
+
   await user.save();
 
+  userAudit(user._id, "UPDATE", oldValue, user);
   res.status(200).json({
     success: true,
     message: 

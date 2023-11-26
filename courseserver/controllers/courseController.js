@@ -4,6 +4,8 @@ import getDataUri from "../utils/dataUri.js";
 import ErrorHandler from "../utils/errorHandler.js";
 import cloudinary from "cloudinary";
 import { Stats } from "../models/Stats.js"; 
+import { courseAudit } from "./courseAuditController.js";
+import { statsAudit } from "./statsAuditController.js";
 
 export const getAllCourses = catchAsyncError(async (req, res, next) => {
   const keyword = req.query.keyword || "";
@@ -37,7 +39,7 @@ export const createCourse = catchAsyncError(async (req, res, next) => {
 
   const mycloud = await cloudinary.v2.uploader.upload(fileUri.content);
 
-  await Course.create({
+  const course = await Course.create({
     title,
     description,
     category,
@@ -47,6 +49,8 @@ export const createCourse = catchAsyncError(async (req, res, next) => {
       url: mycloud.secure_url,
     },
   });
+
+  courseAudit(course._id, "INSERT", "-", course);
 
   res.status(201).json({
     success: true,
@@ -78,6 +82,8 @@ export const addLecture = catchAsyncError(async (req, res, next) => {
 
   if (!course) return next(new ErrorHandler("Course not found", 404));
 
+  const oldValue = await Course.findById(id);
+
   const file = req.file;
   const fileUri = getDataUri(file);
 
@@ -98,6 +104,8 @@ export const addLecture = catchAsyncError(async (req, res, next) => {
 
   await course.save();
 
+  courseAudit(course._id, "UPDATE", oldValue, course);
+
   res.status(200).json({
     success: true,
     message: "Lecture added in Course",
@@ -108,6 +116,8 @@ export const deleteCourse = catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
 
   const course = await Course.findById(id);
+
+  const oldValue = course.toObject();
 
   if (!course) return next(new ErrorHandler("Course not found", 404));
 
@@ -122,6 +132,8 @@ export const deleteCourse = catchAsyncError(async (req, res, next) => {
 
   await course.deleteOne({ _id: id });
 
+  courseAudit(course._id, "DELETE", oldValue, "-");
+
   res.status(200).json({
     success: true,
     message: "Course Deleted Successfully",
@@ -132,6 +144,9 @@ export const deleteCourse = catchAsyncError(async (req, res, next) => {
   const { courseId, lectureId } = req.query;
 
   const course = await Course.findById(courseId);
+
+  const oldValue = await Course.findById(courseId);
+
   if (!course) return next(new ErrorHandler("Course not found", 404));
 
   const lecture = course.lectures.find((item) => {
@@ -149,6 +164,8 @@ export const deleteCourse = catchAsyncError(async (req, res, next) => {
 
   await course.save();
 
+  courseAudit(course._id, "UPDATE", oldValue, course);
+
   res.status(200).json({
     success: true,
     message: "Lecture Deleted Successfully",
@@ -157,6 +174,8 @@ export const deleteCourse = catchAsyncError(async (req, res, next) => {
 
 Course.watch().on("change", async () => {
   const stats = await Stats.find({}).sort({ createdAt: "desc" }).limit(1);
+
+  const oldValue = await Stats.find({}).sort({ createdAt: "desc" }).limit(1);
 
   const courses = await Course.find({});
 
@@ -169,6 +188,12 @@ Course.watch().on("change", async () => {
   stats[0].createdAt = new Date(Date.now());
 
   await stats[0].save(); 
+  
+  const statsUpdated = JSON.stringify(oldValue) !== JSON.stringify(stats);
+
+  if (statsUpdated) {
+    statsAudit(stats[0]._id, "UPDATE", oldValue, stats);
+  }
 });
 
 

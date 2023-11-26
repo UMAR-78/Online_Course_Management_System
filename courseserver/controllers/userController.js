@@ -4,12 +4,11 @@ import { sendToken } from "../utils/sendToken.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import crypto from "crypto";
 import { Course } from "../models/Course.js";
-// import cloudinary from "cloudinary";
-// import getDataUri from "./utils/dataUri.js";
 import { Stats } from "../models/Stats.js";
 import { BackendLog } from "../models/BackendLog.js";
 import { catchAsyncError } from "../middlewares/CatchAsyncError.js";
 import { userAudit } from "./userAuditController.js";
+import { statsAudit } from "./statsAuditController.js";
 
 export const register = catchAsyncError(async (req, res, next) => {
   const { name, email, password, role } = req.body;
@@ -138,29 +137,6 @@ export const updateProfile = catchAsyncError(async (req, res, next) => {
     message: "Profile Updated Successfully",
   });
 });
-
-// export const updateprofilepicture = catchAsyncError(async (req, res, next) => {
-//   const file = req.file;
-
-//   const user = await User.findById(req.user._id);
-
-//   const fileUri = getDataUri(file);
-//   const mycloud = await cloudinary.v2.uploader.upload(fileUri.content);
-
-//   await cloudinary.v2.uploader.destroy(user.avatar.public_id);
-
-//   user.avatar = {
-//     public_id: mycloud.public_id,
-//     url: mycloud.secure_url,
-//   };
-
-//   await user.save();
-
-//   res.status(200).json({
-//     success: true,
-//     message: "Profile Picture Updated Successfully",
-//   });
-// });
 
 export const forgetPassword = catchAsyncError(async (req, res, next) => {
   const { email } = req.body;
@@ -310,11 +286,10 @@ export const deleteUser = catchAsyncError(async (req, res, next) => {
 
   if (!user) return next(new ErrorHandler("User not found", 404));
 
-  // const oldValue = user.toObject();
+  const oldValue = user.toObject();
 
   await User.deleteOne({ _id: req.params.id });
 
-  const oldValue = await User.find({ _id: req.params.id });
   userAudit(user._id, "DELETE", oldValue, "-");
 
   res.status(200).json({
@@ -326,11 +301,11 @@ export const deleteUser = catchAsyncError(async (req, res, next) => {
 export const deleteMyProfile = catchAsyncError(async (req, res, next) => {
   const user = await User.findById(req.user._id);
 
-  // await cloudinary.v2.uploader.destroy(user.avatar.public_id);
-
-  // Cancel Subscription
+  const oldValue = user.toObject();
 
   await User.deleteOne({ _id: req.user._id });
+
+  userAudit(user._id, "DELETE", oldValue, "-");
 
   res
     .status(200)
@@ -346,12 +321,20 @@ export const deleteMyProfile = catchAsyncError(async (req, res, next) => {
 User.watch().on("change", async () => {
   const stats = await Stats.find({}).sort({ createdAt: "desc" }).limit(1);
 
+  const oldValue = await Stats.find({}).sort({ createdAt: "desc" }).limit(1);
+
   const subscription = await User.find({ "subscription.status": "active" });
   stats[0].users = await User.countDocuments();
   stats[0].subscription = subscription.length;
   stats[0].createdAt = new Date(Date.now());
 
   await stats[0].save();
+
+  const statsUpdated = JSON.stringify(oldValue) !== JSON.stringify(stats);
+
+  if (statsUpdated) {
+    statsAudit(stats[0]._id, "UPDATE", oldValue, stats);
+  }
 });
 
 export const updateuserProfile = catchAsyncError(async (req, res, next) => {
@@ -359,10 +342,14 @@ export const updateuserProfile = catchAsyncError(async (req, res, next) => {
 
   const user = await User.findById(req.user._id);
 
+  const oldValue = await User.findById(req.user._id);
+
   if (name) user.name = name;
   if (email) user.email = email;
 
   await user.save();
+
+  userAudit(user._id, "UPDATE", oldValue, user);
 
   res.status(200).json({
     success: true,
