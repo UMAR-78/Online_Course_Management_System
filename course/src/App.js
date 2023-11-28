@@ -10,8 +10,6 @@ import ForgetPassword from './components/Auth/ForgotPassword';
 import ResetPassword from './components/Auth/ResetPassword';
 import Request from './components/Request/Request';
 import Subscribe from './components/Subscribe/Subscribe';
-import SubscribeFail from './components/Subscribe/SubscribeFail';
-import SubscribeSuccess from './components/Subscribe/SubscribeSuccess';
 import NotFound from './components/Layout/NotFound';
 import Loader from './components/Layout/Loader';
 import Profile from './components/Profile/Profile';
@@ -67,8 +65,6 @@ function App() {
         <Route path="/ResetPassword/:token" element= {<ProtectedRoute isAuthenticated={!isAuthenticated} redirect="/profile"> < ResetPassword/> </ProtectedRoute>} /> 
         <Route path="/Request" element= {< Request/>} />
         <Route path="/Subscribe" element= {<ProtectedRoute isAuthenticated={isAuthenticated} > < Subscribe/> </ProtectedRoute>} /> 
-        <Route path="/SubscribeFail" element= {< SubscribeFail/>} /> 
-        <Route path="/SubscribeSuccess" element= {< SubscribeSuccess/>} /> 
         <Route path="/NotFound" element= {< NotFound/>} />
         <Route path="/Profile" element= {<ProtectedRoute isAuthenticated={isAuthenticated} > < Profile user={user}/> </ProtectedRoute>} /> 
         <Route path="/UpdateProfile" element= {<ProtectedRoute isAuthenticated={isAuthenticated} > < UpdateProfile user={user}/> </ProtectedRoute>} />

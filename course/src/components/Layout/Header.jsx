@@ -10,7 +10,6 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import React from 'react';
-// import { ColorModeSwitcher } from '../../../ColorModeSwitcher';
 import { RiDashboardFill, RiLogoutBoxLine, RiMenu5Fill } from 'react-icons/ri';
 import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
@@ -35,8 +34,6 @@ const Header = ({ isAuthenticated = false, user }) => {
 
   return (
     <>
-      {/* <ColorModeSwitcher /> */}
-
       <Button
         onClick={onOpen}
         colorScheme={'yellow'}

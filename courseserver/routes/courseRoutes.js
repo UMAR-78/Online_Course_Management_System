@@ -1,20 +1,6 @@
 import express from "express";
-// import {
-//   addLecture,
-//   createCourse,
-//   deleteCourse,
-//   deleteLecture,
-//   getAllCourses,
-//   getCourseLectures,
-// } from "../controllers/courseController.js";
-// import {
-//   authorizeAdmin,
-//   isAuthenticated,
-//   authorizeSubscribers,
-// } from "../middlewares/auth.js";
 import { isAuthenticated, authorizeAdmin } from "../middlewares/auth.js";
 import singleUpload from "../middlewares/multer.js";
-
 import { createCourse, getAllCourses, getCourseLectures, addLecture, deleteCourse, deleteLecture } from "../controllers/courseController.js";
 
 const router = express.Router();
@@ -31,9 +17,6 @@ router
   .get(isAuthenticated, getCourseLectures)
   .post(isAuthenticated, authorizeAdmin, singleUpload, addLecture)
   .delete(isAuthenticated, authorizeAdmin, deleteCourse);
-//   .get(isAuthenticated, authorizeSubscribers, getCourseLectures)
-//   .post(isAuthenticated, authorizeAdmin, singleUpload, addLecture)
-//   .delete(isAuthenticated, authorizeAdmin, deleteCourse);
 
 // Delete Lecture
 router.route("/lecture").delete(isAuthenticated, authorizeAdmin, deleteLecture);

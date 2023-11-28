@@ -4,7 +4,6 @@ import {
   courseRequest,
   getDashboardStats,
 } from "../controllers/otherController.js";
-
 import { authorizeAdmin, isAuthenticated } from "../middlewares/auth.js";
 
 const router = express.Router();
